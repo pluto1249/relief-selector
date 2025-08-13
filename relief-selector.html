@@ -1,614 +1,462 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Relief Contracting — Colour & Finish Selector</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Relief Contracting — Palette Visualizer (Locked Layout)</title>
 <style>
   :root{
-    --brand:#042039; --gold:#a48d32; --ink:#111; --muted:#6b7280; --panel:#f7f9fc; --line:#e5e7eb;
+    --brand:#0d2a44; --ink:#111; --muted:#6b7280; --panel:#f7f9fc; --line:#e5e7eb;
   }
-  html,body{margin:0;background:#fff;color:var(--ink);font:14px/1.4 system-ui,Segoe UI,Roboto,Arial,sans-serif}
-  .wrap{max-width:1150px;margin:28px auto;padding:0 16px}
-  h1{font-size:20px;margin:0 0 10px;color:var(--brand)}
-  .grid{display:grid;grid-template-columns:360px 1fr;gap:16px}
-  @media (max-width:980px){.grid{grid-template-columns:1fr}}
+  html,body{margin:0;background:#fff;color:var(--ink);font:14px/1.45 system-ui,Segoe UI,Roboto,Arial,sans-serif}
+  .wrap{max-width:1200px;margin:22px auto;padding:0 14px}
+  h1{margin:0 0 10px;font-size:20px;color:var(--brand)}
+  .grid{display:grid;grid-template-columns:360px 1fr;gap:14px}
+  @media (max-width:1000px){.grid{grid-template-columns:1fr}}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
-  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:6px 0}
-  label{font-weight:600;color:#283142}
-  select,input[type="number"],input[type="text"],input[type="email"],textarea{
-    border:1px solid #cfd4dc;border-radius:8px;padding:8px 10px;min-width:120px
-  }
-  textarea{width:100%;min-height:70px}
-  .section{margin-top:6px}
+  .section{margin-top:8px}
   .section>div:first-child{font-weight:800;color:#0f172a;margin-bottom:6px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .swatches{display:flex;gap:8px;flex-wrap:wrap}
-  .swatch{width:28px;height:28px;border-radius:6px;border:1px solid #c7c9cf;cursor:pointer}
-  .swatch.is-active{outline:2px solid var(--gold);outline-offset:2px}
+  .swatch{width:28px;height:28px;border:1px solid #c7c9cf;border-radius:6px;cursor:pointer}
+  .swatch.is-active{outline:2px solid #a48d32;outline-offset:2px}
+  .tile{width:56px;height:38px;border:1px solid #c7c9cf;border-radius:6px;cursor:pointer;background:#ddd}
+  .tile.is-active{outline:2px solid #a48d32;outline-offset:2px}
+  .dooropt{display:flex;gap:8px}
+  .dooropt button{cursor:pointer;border:1px solid #c7c9cf;background:#fff;border-radius:10px;padding:6px 8px;display:flex;align-items:center;gap:8px}
+  .dooropt button.active{outline:2px solid #a48d32}
+  .dooropt img{width:40px;height:56px;object-fit:cover;border-radius:6px;border:1px solid #d1d5db}
   .tools{display:flex;gap:8px;flex-wrap:wrap}
   .btn{background:var(--brand);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
   .btn.secondary{background:#eef2ff;color:#1f2937}
   .small{font-size:12px;color:var(--muted)}
-  .stage{background:#fff;border:1px solid var(--line);border-radius:12px;min-height:520px;display:flex;align-items:center;justify-content:center}
-  .mode-tabs{display:flex;gap:6px}
-  .tab{border:1px solid #cbd5e1;border-radius:999px;padding:8px 12px;cursor:pointer}
-  .tab.active{background:var(--brand);color:#fff;border-color:var(--brand)}
-  .mod-table{display:grid;grid-template-columns:1fr 90px;gap:8px}
-  .notice{background:#fff8e6;border:1px solid #f0d48a;padding:8px;border-radius:8px;font-size:12px}
+  .stage{background:#fff;border:1px solid var(--line);border-radius:12px;min-height:620px;display:flex;align-items:center;justify-content:center}
+  textarea,input{border:1px solid #cfd4dc;border-radius:8px;padding:8px 10px}
+  textarea{width:100%;min-height:70px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Relief Contracting — Colour &amp; Finish Selector (Client Preview)</h1>
+  <h1>Relief Contracting — Kitchen Colour Palette Visualizer</h1>
 
   <div class="grid">
-    <!-- LEFT: Controls + Lead form -->
+    <!-- LEFT: Controls -->
     <div class="card">
       <div class="section">
-        <div>Mode</div>
-        <div class="mode-tabs" id="modeTabs">
-          <div class="tab active" data-mode="door">Single Door</div>
-          <div class="tab" data-mode="run">Cabinet Run</div>
+        <div>Door style (2 options)</div>
+        <div class="dooropt">
+          <button id="optShaker" class="active" data-style="shaker" title="Shaker">
+            <!-- miniature preview drawn by CSS; image placeholders kept for clarity -->
+            <svg width="40" height="56" viewBox="0 0 40 56" style="border-radius:6px;border:1px solid #d1d5db">
+              <rect x="0.5" y="0.5" width="39" height="55" fill="#eee" stroke="#c9ccd1"/>
+              <rect x="6" y="8" width="28" height="40" rx="2" ry="2" fill="#e6e6e6" stroke="#c9ccd1"/>
+            </svg>
+            <span>Shaker</span>
+          </button>
+          <button id="optSlab" data-style="slab" title="Slab">
+            <svg width="40" height="56" viewBox="0 0 40 56" style="border-radius:6px;border:1px solid #d1d5db">
+              <rect x="0.5" y="0.5" width="39" height="55" fill="#eee" stroke="#c9ccd1"/>
+            </svg>
+            <span>Slab</span>
+          </button>
         </div>
       </div>
 
       <div class="section">
-        <div>Door Style (2 types)</div>
-        <select id="style">
-          <option value="slab">Slab</option>
-          <option value="shaker" selected>Shaker</option>
-        </select>
+        <div>Cabinet colour</div>
+        <div id="cabSwatches" class="swatches"></div>
       </div>
 
       <div class="section">
-        <div>Cabinet Finish</div>
-        <select id="finishType">
-          <option value="paint" selected>Paint</option>
-          <option value="wood">Wood</option>
-        </select>
-        <div class="row">
-          <div class="swatches" id="paintSwatches" aria-label="Paint Colours"></div>
-          <div class="swatches" id="woodSwatches" aria-label="Wood Species" style="display:none"></div>
-        </div>
+        <div>Wall paint</div>
+        <div id="wallSwatches" class="swatches"></div>
       </div>
 
       <div class="section">
-        <div>Walls (Paint)</div>
-        <div class="swatches" id="wallSwatches" aria-label="Wall Paint Colours"></div>
+        <div>Backsplash</div>
+        <div id="splashTiles" class="swatches"></div>
+      </div>
+
+      <div class="section">
+        <div>Countertop (Caesarstone)</div>
+        <div id="topTiles" class="swatches"></div>
       </div>
 
       <div class="section">
         <div>Flooring</div>
-        <div class="swatches" id="floorSwatches" aria-label="Flooring Options"></div>
-        <div class="small">Swatches are illustrative; we’ll match final selections to real samples.</div>
-      </div>
-
-      <div id="runBlock" class="section" style="display:none">
-        <div>Cabinet Run</div>
-        <div class="row">
-          <label for="runLength">Total run (inches)</label>
-          <input id="runLength" type="number" value="108" min="60" max="240" step="6">
-          <label><input type="checkbox" id="showCounter" checked> Countertop</label>
-          <label><input type="checkbox" id="showToe" checked> Toe-kick</label>
-          <label><input type="checkbox" id="showUppers" checked> Uppers</label>
-        </div>
-
-        <div class="row">
-          <label for="upperHeight">Upper height</label>
-          <select id="upperHeight">
-            <option value="30" selected>30"</option>
-            <option value="36">36"</option>
-            <option value="42">42"</option>
-          </select>
-
-          <label for="upperCount"># of boxes</label>
-          <select id="upperCount">
-            <option>2</option><option selected>3</option><option>4</option>
-          </select>
-
-          <label for="upperStyle">Upper option (2)</label>
-          <select id="upperStyle">
-            <option value="doors" selected>Doors</option>
-            <option value="shelves">Open Shelves</option>
-          </select>
-        </div>
-
-        <div class="section">
-          <div>Base modules (3 options only)</div>
-          <div id="baseMods" class="mod-table"></div>
-          <div class="small">Tip: widths should roughly add up to the total run; small gaps auto-fill as spacers.</div>
-        </div>
+        <div id="floorTiles" class="swatches"></div>
+        <div class="small">Patterns are illustrative; final jobs use real samples.</div>
       </div>
 
       <div class="section">
-        <div>Send Your Selection</div>
-        <div class="notice">On Submit: your preview image is saved to your device, and your email app opens addressed to <b>info@reliefcontracting.ca</b>. Attach the downloaded image before sending.</div>
+        <div>Send your selection</div>
         <div class="row">
-          <input id="cName" type="text" placeholder="Full name" style="flex:1">
-          <input id="cEmail" type="email" placeholder="Email" style="flex:1">
+          <input id="cName" placeholder="Full name" style="flex:1">
+          <input id="cEmail" placeholder="Email" style="flex:1">
         </div>
-        <div class="row">
-          <input id="cPhone" type="text" placeholder="Phone" style="flex:1">
-          <input id="cAddress" type="text" placeholder="Project address" style="flex:1">
-        </div>
-        <textarea id="cNotes" placeholder="Anything we should know? e.g., timeline, appliances, must-haves."></textarea>
+        <textarea id="cNotes" placeholder="Anything we should know?"></textarea>
         <div class="tools">
           <button class="btn" id="submitBtn">Submit (Email Us)</button>
           <button class="btn secondary" id="downloadBtn">Download PNG</button>
           <button class="btn secondary" id="copyBtn">Copy Summary</button>
         </div>
+        <div class="small">Submit downloads a snapshot and opens your email to <b>info@reliefcontracting.ca</b>. Attach the image.</div>
       </div>
     </div>
 
     <!-- RIGHT: Stage -->
     <div class="stage">
-      <svg id="scene" width="900" height="520" viewBox="0 0 900 520" role="img" aria-label="Preview"></svg>
+      <svg id="scene" width="1024" height="620" viewBox="0 0 1024 620" role="img" aria-label="Kitchen Preview"></svg>
     </div>
   </div>
 </div>
 
 <script>
-window.addEventListener('DOMContentLoaded', function () {
-/* ====== Config ====== */
-const PAINTS = [
-  {name:'RC Blue', code:'#042039'},
-  {name:'Warm White', code:'#f5f5f2'},
-  {name:'Cloud Grey', code:'#cfd5db'},
-  {name:'Graphite', code:'#2b2f38'},
-  {name:'Deep Green', code:'#1f3b34'},
-  {name:'Classic Black', code:'#111111'}
-];
-const WOODS = [
-  {name:'Maple', id:'maple'},
-  {name:'White Oak', id:'whiteoak'},
-  {name:'Walnut', id:'walnut'}
-];
-const WALLS = [
-  {name:'White', code:'#f6f7fb'},
-  {name:'Soft Greige', code:'#efefe9'},
-  {name:'Pale Grey', code:'#e8edf2'},
-  {name:'Warm Taupe', code:'#e9e0d8'}
-];
-const FLOORS = [
-  {name:'Light Oak', id:'floor_oak_light'},
-  {name:'Mid Oak', id:'floor_oak_mid'},
-  {name:'Walnut', id:'floor_walnut'},
-  {name:'Concrete', id:'floor_concrete'},
-  {name:'Warm Tile', id:'floor_tile_warm'}
-];
-// 3 lower module types only
-const MODULE_TYPES = [
-  {id:'door', label:'Door (shelves)'},
-  {id:'drawer3', label:'3-Drawer Base'},
-  {id:'sink', label:'Sink Base'}
-];
-
-/* ====== State ====== */
+/* ========= STATE ========= */
 const state = {
-  mode:'door',
-  style:'shaker', // slab | shaker
-  finishType:'paint', // paint | wood
-  paint:'#042039',
-  wood:'maple',
-  wall:'#f6f7fb',
-  floor:'floor_oak_light',
-
-  // run
-  runLength:108,
-  showCounter:true,
-  showToe:true,
-  showUppers:true,
-  upperHeight:30,
-  upperCount:3,
-  upperStyle:'doors', // doors | shelves
-  baseModules:[
-    {type:'sink', width:36},
-    {type:'door', width:24},
-    {type:'drawer3', width:24}
-  ],
-
-  // client
-  cName:'', cEmail:'', cPhone:'', cAddress:'', cNotes:''
+  style: 'shaker',
+  cab: '#e7e6e3',
+  wall: '#eef0f3',
+  splash: 'white_subway',
+  top: 'calacatta',
+  floor: 'oak_light',
+  // contact
+  cName:'', cEmail:'', cNotes:''
 };
 
-/* ====== DOM ====== */
-const scene = document.getElementById('scene');
-const styleSel = document.getElementById('style');
-const finishSel = document.getElementById('finishType');
-const paintWrap = document.getElementById('paintSwatches');
-const woodWrap  = document.getElementById('woodSwatches');
-const wallWrap  = document.getElementById('wallSwatches');
-const floorWrap = document.getElementById('floorSwatches');
-const runBlock  = document.getElementById('runBlock');
+/* ========= SWATCH SETS ========= */
+const CABINET_COLOURS = [
+  {name:'White', code:'#f2f3f4'},
+  {name:'Warm White', code:'#efeae3'},
+  {name:'Light Grey', code:'#d8dde2'},
+  {name:'Greige', code:'#d9d3c9'},
+  {name:'Navy', code:'#0f2746'},
+  {name:'Forest', code:'#213a33'},
+  {name:'Charcoal', code:'#2b3138'},
+  {name:'Black', code:'#111111'}
+];
+const WALL_COLOURS = [
+  {name:'White', code:'#f7f8fa'},
+  {name:'Pale Grey', code:'#edf1f5'},
+  {name:'Soft Greige', code:'#eee8df'},
+  {name:'Warm Taupe', code:'#e9e0d8'}
+];
 
-/* ====== Helpers ====== */
-function clearSVG(svg){ while(svg.firstChild) svg.removeChild(svg.firstChild); }
-function ensureDefs(svg){
-  let d=svg.querySelector('defs'); if(!d){ d=document.createElementNS('http://www.w3.org/2000/svg','defs'); svg.appendChild(d); }
-  return d;
+/* ========= SVG HELPERS ========= */
+const svg = document.getElementById('scene');
+function clearSVG(){ while(svg.firstChild) svg.removeChild(svg.firstChild); }
+function rect(x,y,w,h,fill,stroke='none',sw=1,rx=0){ const r=el('rect',{x,y,width:w,height:h,fill,stroke,'stroke-width':sw,rx}); svg.appendChild(r); return r; }
+function line(x1,y1,x2,y2,stroke='#000',sw=1,op=1){ const l=el('line',{x1,y1,x2,y2,stroke,'stroke-width':sw,opacity:op}); svg.appendChild(l); return l; }
+function el(tag,attrs){ const e=document.createElementNS('http://www.w3.org/2000/svg',tag); for(const k in attrs){ if(attrs[k]!=null) e.setAttribute(k,attrs[k]); } return e; }
+function ensureDefs(){ let d=svg.querySelector('defs'); if(!d){ d=el('defs',{}); svg.appendChild(d); } return d; }
+function shade(hex,percent){ const f=parseInt(hex.slice(1),16),t=percent<0?0:255,p=Math.abs(percent)/100,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF,to=v=>Math.round((t - v)*p)+v; return `#${(1<<24|to(R)<<16|to(G)<<8|to(B)).toString(16).slice(1)}`; }
+
+/* ========= PATTERNS (procedural; simple + fast) ========= */
+/* Subway tile pattern */
+function patternSubway(id, grout='#dcdcdc', tile='#f3f4f6', dark=false){
+  const d=ensureDefs(); if(d.querySelector('#'+id)) return;
+  const pat=el('pattern',{id,patternUnits:'userSpaceOnUse',width:64,height:32});
+  const bg=el('rect',{x:0,y:0,width:64,height:32,fill:tile}); pat.appendChild(bg);
+  const g=el('g',{stroke:grout,'stroke-width':1,opacity: dark?0.4:0.9});
+  // tile grid with half-offset rows
+  for(let y=0;y<=32;y+=16) g.appendChild(el('line',{x1:0,y1:y,x2:64,y2:y}));
+  for(let x=0;x<=64;x+=32) g.appendChild(el('line',{x1:x,y1:0,x2:x,y2:16}));
+  for(let x=-32;x<=64;x+=32) g.appendChild(el('line',{x1:x,y1:16,x2:x+32,y2:16}));
+  pat.appendChild(g); d.appendChild(pat);
 }
-function rect(svg,x,y,w,h,fill,stroke='none',sw=1,rx=0,ry=0){
-  const r=document.createElementNS('http://www.w3.org/2000/svg','rect');
-  r.setAttribute('x',x); r.setAttribute('y',y); r.setAttribute('width',w); r.setAttribute('height',h);
-  r.setAttribute('fill',fill); r.setAttribute('stroke',stroke); r.setAttribute('stroke-width',sw);
-  if(rx) r.setAttribute('rx',rx); if(ry) r.setAttribute('ry',ry); svg.appendChild(r); return r;
+/* Marble-ish counter (very light veining) */
+function patternMarble(id, base='#f4f2ed', ve='#d7d2c7'){
+  const d=ensureDefs(); if(d.querySelector('#'+id)) return;
+  const pat=el('pattern',{id,patternUnits:'userSpaceOnUse',width:200,height:64});
+  pat.appendChild(el('rect',{x:0,y:0,width:200,height:64,fill:base}));
+  const p=el('path',{d:'M0,48 C40,30 60,54 100,36 S160,30 200,40',stroke:ve,'stroke-width':2,fill:'none',opacity:.5});
+  const p2=p.cloneNode(); p2.setAttribute('d','M0,20 C40,12 70,28 110,18 S170,22 200,14'); p2.setAttribute('opacity','.35');
+  pat.appendChild(p); pat.appendChild(p2); d.appendChild(pat);
 }
-function line(svg,x1,y1,x2,y2,stroke='#000',sw=1,op=1){
-  const l=document.createElementNS('http://www.w3.org/2000/svg','line');
-  l.setAttribute('x1',x1); l.setAttribute('y1',y1); l.setAttribute('x2',x2); l.setAttribute('y2',y2);
-  l.setAttribute('stroke',stroke); l.setAttribute('stroke-width',sw); l.setAttribute('opacity',op);
-  svg.appendChild(l); return l;
+/* Speckled quartz */
+function patternSpeckle(id, base='#f1efea'){
+  const d=ensureDefs(); if(d.querySelector('#'+id)) return;
+  const pat=el('pattern',{id,patternUnits:'userSpaceOnUse',width:120,height:40});
+  pat.appendChild(el('rect',{x:0,y:0,width:120,height:40,fill:base}));
+  const g=el('g',{fill:'#bfbab0',opacity:.6}); for(let i=0;i<80;i++){ const x=Math.random()*120, y=Math.random()*40, r=Math.random()*1.5+0.3; g.appendChild(el('circle',{cx:x,cy:y,r})); }
+  pat.appendChild(g); d.appendChild(pat);
 }
-function shade(hex,percent){
-  const f=parseInt(hex.slice(1),16),t=percent<0?0:255,p=Math.abs(percent)/100,
-        R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
-  const to=v=>Math.round((t - v)*p)+v;
-  return `#${(1<<24 | to(R)<<16 | to(G)<<8 | to(B)).toString(16).slice(1)}`;
+/* Solid dark */
+function patternSolid(id, color='#1d1f22'){ const d=ensureDefs(); if(d.querySelector('#'+id)) return; const pat=el('pattern',{id,patternUnits:'userSpaceOnUse',width:10,height:10}); pat.appendChild(el('rect',{x:0,y:0,width:10,height:10,fill:color})); ensureDefs().appendChild(pat); }
+/* Wood floor (simple planks) */
+function patternWood(id, light=true){
+  const d=ensureDefs(); if(d.querySelector('#'+id)) return;
+  const base=light? '#d9c1a0' : '#6f4a38';
+  const grain=light? '#b8946d' : '#5a3e31';
+  const pat=el('pattern',{id,patternUnits:'userSpaceOnUse',width:100,height:24});
+  pat.appendChild(el('rect',{x:0,y:0,width:100,height:24,fill:base}));
+  pat.appendChild(el('path',{d:'M0,12 H100',stroke:grain,'stroke-width':0.6,opacity:.6}));
+  // plank seams
+  for(let x=25;x<=100;x+=25) pat.appendChild(el('line',{x1:x,y1:0,x2:x,y2:24,stroke:grain,'stroke-width':1,opacity:.55}));
+  d.appendChild(pat);
 }
-function woodPattern(id, svg){
-  const defs=ensureDefs(svg);
-  if(defs.querySelector(`#${id}`)) return;
-  const pattern = document.createElementNS('http://www.w3.org/2000/svg','pattern');
-  pattern.setAttribute('id', id);
-  pattern.setAttribute('patternUnits','userSpaceOnUse');
-  pattern.setAttribute('width','14'); pattern.setAttribute('height','14');
-  const base = document.createElementNS('http://www.w3.org/2000/svg','rect');
-  const grain = document.createElementNS('http://www.w3.org/2000/svg','path');
-  if(id==='maple'){ base.setAttribute('fill','#e9dcc9'); grain.setAttribute('stroke','#d5c4a7'); }
-  else if(id==='whiteoak'){ base.setAttribute('fill','#e6d9bd'); grain.setAttribute('stroke','#cdbb93'); }
-  else { base.setAttribute('fill','#6e4b3a'); grain.setAttribute('stroke','#5a3e31'); }
-  grain.setAttribute('d','M0 7 H14'); grain.setAttribute('stroke-width','0.7'); grain.setAttribute('opacity','0.6');
-  pattern.appendChild(base); pattern.appendChild(grain); defs.appendChild(pattern);
-}
-function makeGlass(defs){
-  if(defs.querySelector('#glass')) return;
-  const lg=document.createElementNS('http://www.w3.org/2000/svg','linearGradient');
-  lg.setAttribute('id','glass'); lg.setAttribute('x1','0'); lg.setAttribute('x2','0'); lg.setAttribute('y1','0'); lg.setAttribute('y2','1');
-  const s1=document.createElementNS(lg.namespaceURI,'stop'); s1.setAttribute('offset','0%'); s1.setAttribute('stop-color','#f0f6ff'); s1.setAttribute('stop-opacity','0.9');
-  const s2=document.createElementNS(lg.namespaceURI,'stop'); s2.setAttribute('offset','100%'); s2.setAttribute('stop-color','#dbe7f6'); s2.setAttribute('stop-opacity','0.6');
-  lg.appendChild(s1); lg.appendChild(s2); defs.appendChild(lg);
-}
+/* Charcoal square tile floor */
+function patternSquareTile(id){ const d=ensureDefs(); if(d.querySelector('#'+id)) return; const pat=el('pattern',{id,patternUnits:'userSpaceOnUse',width:64,height:64}); pat.appendChild(el('rect',{x:0,y:0,width:64,height:64,fill:'#2e3236'})); for(let i=0;i<=64;i+=16){ pat.appendChild(el('line',{x1:i,y1:0,x2:i,y2:64,stroke:'#51565c','stroke-width':1})); pat.appendChild(el('line',{x1:0,y1:i,x2:64,y2:i,stroke:'#51565c','stroke-width':1})); } d.appendChild(pat); }
 
-/* Swatch builders */
-function setActive(container, el){ [...container.children].forEach(c=>c.classList.remove('is-active')); el.classList.add('is-active'); }
-function makeSwatches(){
-  // paint
-  paintWrap.innerHTML='';
-  PAINTS.forEach((p,i)=>{
-    const b=document.createElement('button');
-    b.className='swatch'; b.title=p.name; b.style.background=p.code;
-    if(i===0) b.classList.add('is-active');
-    b.onclick=()=>{ state.paint=p.code; setActive(paintWrap,b); render(); };
-    paintWrap.appendChild(b);
-  });
-  // wood
-  woodWrap.innerHTML='';
-  WOODS.forEach((w,i)=>{
-    const b=document.createElement('button');
-    b.className='swatch'; b.title=w.name; b.style.background='#ddd';
-    b.dataset.wood=w.id; if(i===0) b.classList.add('is-active');
-    b.onclick=()=>{ state.wood=w.id; setActive(woodWrap,b); render(); };
-    woodWrap.appendChild(b);
-  });
-  // walls
-  wallWrap.innerHTML='';
-  WALLS.forEach((w,i)=>{
-    const b=document.createElement('button');
-    b.className='swatch'; b.title=w.name; b.style.background=w.code;
-    if(i===0) b.classList.add('is-active');
-    b.onclick=()=>{ state.wall=w.code; setActive(wallWrap,b); render(); };
-    wallWrap.appendChild(b);
-  });
-  // floors (CSS-only previews)
-  const floorPreview = {
-    'floor_oak_light':'linear-gradient(45deg,#e8dcc4 25%,#d8c6a9 25%,#d8c6a9 50%,#e8dcc4 50%,#e8dcc4 75%,#d8c6a9 75%)',
-    'floor_oak_mid':'linear-gradient(45deg,#d0b48f 25%,#c2a27b 25%,#c2a27b 50%,#d0b48f 50%,#d0b48f 75%,#c2a27b 75%)',
-    'floor_walnut':'linear-gradient(45deg,#6b4a39 25%,#5a3e31 25%,#5a3e31 50%,#6b4a39 50%,#6b4a39 75%,#5a3e31 75%)',
-    'floor_concrete':'repeating-linear-gradient(45deg,#c7cbd0 0 6px,#b7bcc3 6px 12px)',
-    'floor_tile_warm':'repeating-linear-gradient(0deg,#d8c7b4 0 14px,#cbb7a0 14px 28px)'
-  };
-  floorWrap.innerHTML='';
-  FLOORS.forEach((f,i)=>{
-    const b=document.createElement('button');
-    b.className='swatch'; b.title=f.name; b.style.background=floorPreview[f.id];
-    if(i===0) b.classList.add('is-active');
-    b.onclick=()=>{ state.floor=f.id; setActive(floorWrap,b); render(); };
-    floorWrap.appendChild(b);
-  });
-}
+/* Build all base patterns once */
+patternSubway('splash_white', '#d8dadf', '#f6f7fb', false);
+patternSubway('splash_dark', '#a4a7ad', '#2d3136', true);
+patternSubway('splash_marble_grid', '#d6d6d6', '#eef0f2', false);
+patternMarble('top_calacatta', '#f4f2ed', '#cbc5bc');
+patternMarble('top_frosty', '#f6f4ee', '#e3ddd1');
+patternSpeckle('top_atlantic', '#ece9e4');
+patternSolid('top_jet', '#16181b');
+patternSolid('top_raven', '#3a3f45');
+patternWood('floor_oak_light', true);
+patternWood('floor_oak_dark', false);
+patternSquareTile('floor_charcoal');
 
-/* UI wiring */
-document.getElementById('modeTabs').addEventListener('click', (e)=>{
-  const t=e.target.closest('.tab'); if(!t) return;
-  [...e.currentTarget.children].forEach(x=>x.classList.remove('active'));
-  t.classList.add('active');
-  state.mode=t.dataset.mode;
-  runBlock.style.display = state.mode==='run' ? 'block' : 'none';
-  render();
-});
-styleSel.addEventListener('change', ()=>{ state.style=styleSel.value; render(); });
-finishSel.addEventListener('change', ()=>{
-  state.finishType=finishSel.value;
-  paintWrap.style.display = state.finishType==='paint' ? 'flex':'none';
-  woodWrap.style.display  = state.finishType==='wood' ? 'flex':'none';
-  render();
-});
-
-/* Run inputs */
-document.getElementById('runLength').addEventListener('input', e=>{ state.runLength=+e.target.value||108; render(); });
-['showCounter','showToe','showUppers'].forEach(id=>{
-  document.getElementById(id).addEventListener('change', e=>{ state[id]=e.target.checked; render(); });
-});
-document.getElementById('upperHeight').addEventListener('change', e=>{ state.upperHeight=+e.target.value; render(); });
-document.getElementById('upperCount').addEventListener('change', e=>{ state.upperCount=+e.target.value; render(); });
-document.getElementById('upperStyle').addEventListener('change', e=>{ state.upperStyle=e.target.value; render(); });
-
-/* Client fields */
-['cName','cEmail','cPhone','cAddress','cNotes'].forEach(id=>{
-  const el=document.getElementById(id); el.addEventListener('input', ()=>{ state[id]=el.value; });
-});
-
-/* Base module rows (exactly 3) */
-const baseModsEl = document.getElementById('baseMods');
-function buildBaseModuleRows(){
-  baseModsEl.innerHTML='';
-  state.baseModules = state.baseModules.slice(0,3);
-  while(state.baseModules.length<3) state.baseModules.push({type:'door', width:24});
-  state.baseModules.forEach((m)=>{
-    const typeSel=document.createElement('select');
-    MODULE_TYPES.forEach(mt=>{
-      const opt=document.createElement('option'); opt.value=mt.id; opt.textContent=mt.label;
-      if(mt.id===m.type) opt.selected=true; typeSel.appendChild(opt);
-    });
-    typeSel.addEventListener('change', e=>{ m.type=e.target.value; render(); });
-
-    const wSel=document.createElement('select');
-    [18,21,24,27,30,33,36].forEach(w=>{
-      const opt=document.createElement('option'); opt.value=w; opt.textContent=w+'"';
-      if(w===m.width) opt.selected=true; wSel.appendChild(opt);
-    });
-    wSel.addEventListener('change', e=>{ m.width=+e.target.value; render(); });
-
-    baseModsEl.appendChild(typeSel);
-    baseModsEl.appendChild(wSel);
-  });
-}
-
-/* ====== Drawing ====== */
-function drawDoor(svg, x,y,w,h, style, fillPaint, fillWoodId){
-  const NS='http://www.w3.org/2000/svg';
-  const g=document.createElementNS(NS,'g'); svg.appendChild(g);
-  const faceFill = fillPaint ? fillPaint : `url(#${fillWoodId})`;
-  rect(svg,x,y,w,h, faceFill,'rgba(0,0,0,.18)',1.1,4,4);
+/* ========= RENDER ========= */
+function drawDoor(x,y,w,h,style,fill){
+  // Cabinet body
+  rect(x, y, w, h, fill, 'rgba(0,0,0,.08)', 1, 3);
   if(style==='shaker'){
-    const rail=18;
-    const inner=document.createElementNS(NS,'rect');
-    inner.setAttribute('x', x+rail); inner.setAttribute('y', y+rail);
-    inner.setAttribute('width', w-rail*2); inner.setAttribute('height', h-rail*2);
-    inner.setAttribute('rx','2'); inner.setAttribute('ry','2');
-    inner.setAttribute('fill', fillPaint ? shade(fillPaint,-6) : 'rgba(0,0,0,.04)');
-    inner.setAttribute('stroke','rgba(0,0,0,.15)'); svg.appendChild(inner);
+    const rail= Math.min(18, Math.max(10, w*0.06));
+    const inner=el('rect',{x:x+rail,y:y+rail,width:w-rail*2,height:h-rail*2,rx:2,ry:2,fill:shade(fill,-7),stroke:'rgba(0,0,0,.15)','stroke-width':0.8});
+    svg.appendChild(inner);
   }
-  const handle=document.createElementNS(NS,'rect');
-  handle.setAttribute('x', x+w-10); handle.setAttribute('y', y+h/2-22);
-  handle.setAttribute('width','3'); handle.setAttribute('height','44'); handle.setAttribute('rx','1.5');
-  handle.setAttribute('fill','#b4b7bd'); svg.appendChild(handle);
+  // simple handle
+  svg.appendChild(el('rect',{x:x+w-8, y:y+h/2-16, width:3,height:32,rx:1.4, fill:'#b4b7bd'}));
 }
-function drawShelfBox(svg, x,y,w,h){
-  rect(svg, x, y, w, h, '#f7f7f7', 'rgba(0,0,0,.08)', 1);
-  rect(svg, x+8, y+h/2-2, w-16, 4, '#d0d4db');
+function drawDrawer(x,y,w,h,fill){
+  // face
+  rect(x+4,y+4,w-8,h-8,fill,'rgba(0,0,0,.18)',1,3);
+  // pull
+  svg.appendChild(el('rect',{x:x+w/2-14, y:y+h/2-2, width:28, height:4, rx:2, fill:'#b4b7bd'}));
 }
+function drawRun(){
+  clearSVG();
+  const W=1024,H=620, margin=60;
+  const wallH=420;
+  // WALL
+  rect(0,0,W,wallH, state.wall);
+  // BACKSPLASH
+  const splashTop = 210; // from top
+  const splashBottom = 370; // just under the counter
+  const splashFill = {
+    'white_subway': 'url(#splash_white)',
+    'basalt': 'url(#splash_dark)',
+    'marble': 'url(#splash_marble_grid)'
+  }[state.splash] || 'url(#splash_white)';
+  rect(margin, splashTop, W - margin*2, splashBottom - splashTop, splashFill, 'rgba(0,0,0,.05)', 1, 2);
 
-function drawScene(){
-  const W=900, H=520, margin=28;
-  const wallH = H*0.56;
-  const defs=ensureDefs(scene); makeGlass(defs);
-  woodPattern('maple', scene); woodPattern('whiteoak', scene); woodPattern('walnut', scene);
+  // FLOOR
+  const floorFill = {
+    'oak_light': 'url(#floor_oak_light)',
+    'oak_dark': 'url(#floor_oak_dark)',
+    'charcoal_tile':'url(#floor_charcoal)',
+    'white_tile':'url(#splash_white)'
+  }[state.floor] || 'url(#floor_oak_light)';
+  rect(0, wallH, W, H - wallH, floorFill);
 
-  // BACKGROUND: wall + floor
-  rect(scene,0,0,W,wallH, state.wall); // wall paint
-  // floor styles via patterns
-  const fpId = `pat_${state.floor}`;
-  if(!defs.querySelector(`#${fpId}`)){
-    const pat=document.createElementNS('http://www.w3.org/2000/svg','pattern');
-    pat.setAttribute('id',fpId); pat.setAttribute('patternUnits','userSpaceOnUse');
-    pat.setAttribute('width','28'); pat.setAttribute('height','28');
-    const base=document.createElementNS(pat.namespaceURI,'rect'); base.setAttribute('x','0'); base.setAttribute('y','0'); base.setAttribute('width','28'); base.setAttribute('height','28');
-    const grain=document.createElementNS(pat.namespaceURI,'path'); grain.setAttribute('stroke-width','0.7'); grain.setAttribute('opacity','0.6');
-    if(state.floor==='floor_oak_light'){ base.setAttribute('fill','#e7dac3'); grain.setAttribute('stroke','#d2c2a6'); }
-    else if(state.floor==='floor_oak_mid'){ base.setAttribute('fill','#cfb28d'); grain.setAttribute('stroke','#bb9b73'); }
-    else if(state.floor==='floor_walnut'){ base.setAttribute('fill','#6b4a39'); grain.setAttribute('stroke','#5a3e31'); }
-    else if(state.floor==='floor_concrete'){ base.setAttribute('fill','#c1c6cc'); grain.setAttribute('stroke','#a8aeb6'); }
-    else { base.setAttribute('fill','#d8c7b4'); grain.setAttribute('stroke','#c3ac95'); }
-    grain.setAttribute('d','M0 14 H28');
-    pat.appendChild(base); pat.appendChild(grain); defs.appendChild(pat);
-  }
-  rect(scene,0,wallH,W,H-wallH, `url(#${fpId})`);
-
-  if(state.mode==='door'){
-    const w=280,h=420;
-    const fillPaint = state.finishType==='paint' ? state.paint : null;
-    const fillWood  = state.finishType==='wood'  ? state.wood  : null;
-    drawDoor(scene, (W-w)/2, (H-h)/2, w, h, state.style, fillPaint, fillWood);
-    return;
-  }
-
-  // RUN
+  // BASE CABINET RUN (locked to reference)
   const avail = W - margin*2;
-  const totalInches = Math.max(48, state.runLength);
-  const pxPerIn = avail / totalInches;
-  const baseTopY = wallH - 8;
-  const cabinetH = 230;
-  const toeH = 26;
+  const widthsIn = [36,28,30,18,27]; // L to R (stove = 30 slot)
+  const totalIn = widthsIn.reduce((a,b)=>a+b,0);
+  const pxPerIn = avail / totalIn;
+  const gap=8;
+  const cH = 220, toe=24;
+  const counterY = 370;
+  const cabY = counterY - cH;
 
-  // BASES (3 boxes)
   let x = margin;
-  state.baseModules.forEach((m)=>{
-    const wIn = m.width;
-    const wPx = wIn * pxPerIn;
-    const cabY = baseTopY - (state.showCounter? 12:0) - cabinetH;
+  const face = state.cab;
 
-    // Box
-    rect(scene, x, cabY, wPx, cabinetH, '#f7f7f7', 'rgba(0,0,0,.08)', 1);
+  // 1) 36" double door
+  let w = widthsIn[0]*pxPerIn;
+  rect(x, cabY, w, cH, '#f7f7f7','rgba(0,0,0,.08)',1,3);
+  drawDoor(x+6, cabY+8, (w-18)/2, cH-16, state.style, face);
+  drawDoor(x+12+(w-18)/2, cabY+8, (w-18)/2, cH-16, state.style, face);
+  x += w + gap;
 
-    const fillPaint = state.finishType==='paint' ? state.paint : null;
-    const fillWood  = state.finishType==='wood'  ? state.wood  : null;
+  // 2) 28" drawer stack
+  w = widthsIn[1]*pxPerIn;
+  rect(x, cabY, w, cH, '#f7f7f7','rgba(0,0,0,.08)',1,3);
+  const dH=(cH-28)/3;
+  for(let i=0;i<3;i++) drawDrawer(x+6, cabY+8+i*(dH+6), w-12, dH, face);
+  x += w + gap;
 
-    if(m.type==='drawer3'){
-      const drawerH = (cabinetH - 24) / 3;
-      for(let i=0;i<3;i++){
-        const y = cabY + 8 + i*(drawerH+4);
-        rect(scene, x+6, y, wPx-12, drawerH, fillPaint?fillPaint:`url(#${fillWood})`, 'rgba(0,0,0,.18)', 1, 3, 3);
-        rect(scene, x+wPx/2-14, y+drawerH/2-2, 28,4, '#b4b7bd');
-      }
-    } else if(m.type==='sink'){
-      const falseH=32;
-      rect(scene, x+6, cabY+6, wPx-12, falseH, fillPaint?fillPaint:`url(#${fillWood})`, 'rgba(0,0,0,.18)', 1,3,3);
-      rect(scene, x+wPx/2-14, cabY+6+falseH/2-2, 28,4, '#b4b7bd');
-      const doorW=(wPx-18)/2;
-      drawDoor(scene, x+6, cabY+10+falseH, doorW, cabinetH-falseH-16, state.style, fillPaint, fillWood);
-      drawDoor(scene, x+12+doorW, cabY+10+falseH, doorW, cabinetH-falseH-16, state.style, fillPaint, fillWood);
-    } else {
-      if(wIn>=24){
-        const dW=(wPx-18)/2;
-        drawDoor(scene, x+6, cabY+6, dW, cabinetH-12, state.style, fillPaint, fillWood);
-        drawDoor(scene, x+12+dW, cabY+6, dW, cabinetH-12, state.style, fillPaint, fillWood);
-      } else {
-        drawDoor(scene, x+6, cabY+6, wPx-12, cabinetH-12, state.style, fillPaint, fillWood);
-      }
-    }
+  // 3) Stove opening 30"
+  w = widthsIn[2]*pxPerIn;
+  // oven body
+  const oven = el('g',{}); svg.appendChild(oven);
+  oven.appendChild(el('rect',{x:x+8,y:cabY+36,width:w-16,height:cH-28,rx:6,fill:'#e1e3e6',stroke:'#aeb4bb'}));
+  oven.appendChild(el('rect',{x:x+14,y:cabY+60,width:w-28,height:cH-70,rx:8,fill:'#222',stroke:'#666'}));
+  // control
+  oven.appendChild(el('rect',{x:x+10,y:cabY+20,width:w-20,height:20,rx:4,fill:'#cfd4da',stroke:'#aeb4bb'}));
+  x += w + gap;
 
-    if(state.showToe){
-      rect(scene, x, cabY+cabinetH-6, wPx, toeH, '#c9ccd1');
-      line(scene, x, cabY+cabinetH-6, x+wPx, cabY+cabinetH-6, '#a9adb5',1,0.7);
-    }
+  // 4) 18" single door
+  w = widthsIn[3]*pxPerIn;
+  rect(x, cabY, w, cH, '#f7f7f7','rgba(0,0,0,.08)',1,3);
+  drawDoor(x+6, cabY+8, w-12, cH-16, state.style, face);
+  x += w + gap;
 
-    x += wPx + 6;
-  });
+  // 5) 27" drawer stack
+  w = widthsIn[4]*pxPerIn;
+  rect(x, cabY, w, cH, '#f7f7f7','rgba(0,0,0,.08)',1,3);
+  const dH2=(cH-28)/3;
+  for(let i=0;i<3;i++) drawDrawer(x+6, cabY+8+i*(dH2+6), w-12, dH2, face);
 
-  // Countertop
-  if(state.showCounter){
-    rect(scene, margin-6, baseTopY-12, avail+12, 12, '#b7b9c0', 'rgba(0,0,0,.2)',1,4,4);
-  }
+  // Toe-kick
+  rect(margin, cabY+cH-6, avail, toe, '#c9ccd1'); line(margin, cabY+cH-6, margin+avail, cabY+cH-6,'#a9adb5',1,.7);
+
+  // Countertop across run
+  const topFill = {
+    'calacatta':'url(#top_calacatta)',
+    'frosty':'url(#top_frosty)',
+    'jet':'url(#top_jet)',
+    'raven':'url(#top_raven)',
+    'atlantic':'url(#top_atlantic)'
+  }[state.top] || 'url(#top_calacatta)';
+  rect(margin-6, counterY-14, avail+12, 16, topFill,'rgba(0,0,0,.25)',1,4);
 
   // UPPERS
-  if(state.showUppers){
-    const uCount = state.upperCount;
-    const uHIn = state.upperHeight;
-    const uppersY = baseTopY - (state.showCounter? 12:0) - 20 - (uHIn*3);
-    const uppersH = uHIn*3;
-    const gap = 6;
-    const boxW = (avail - gap*(uCount-1)) / uCount;
-    for(let i=0;i<uCount;i++){
-      const ux = margin + i*(boxW+gap);
-      if(state.upperStyle==='shelves'){
-        drawShelfBox(scene, ux, uppersY, boxW, uppersH);
-      } else {
-        rect(scene, ux, uppersY, boxW, uppersH, '#f7f7f7', 'rgba(0,0,0,.08)', 1);
-        const fillPaint = state.finishType==='paint' ? state.paint : null;
-        const fillWood  = state.finishType==='wood'  ? state.wood  : null;
-        const dW = (boxW-18)/2;
-        drawDoor(scene, ux+6, uppersY+6, dW, uppersH-12, state.style, fillPaint, fillWood);
-        drawDoor(scene, ux+12+dW, uppersY+6, dW, uppersH-12, state.style, fillPaint, fillWood);
-      }
-    }
-  }
+  const uppY = 140, uppH = 160;
+  const leftUppW = (36+28)*pxPerIn; // above first two bases
+  const rightUppW = (18+27)*pxPerIn; // above last two bases
+  // left uppers: two boxes
+  const gapU=8;
+  let ux = margin; const boxW=(leftUppW-gapU)/2;
+  rect(ux, uppY, boxW, uppH, '#f7f7f7','rgba(0,0,0,.08)',1,3);
+  drawDoor(ux+6, uppY+6, (boxW-18)/2, uppH-12, state.style, face);
+  drawDoor(ux+12+(boxW-18)/2, uppY+6, (boxW-18)/2, uppH-12, state.style, face);
+  ux += boxW + gapU;
+  rect(ux, uppY, boxW, uppH, '#f7f7f7','rgba(0,0,0,.08)',1,3);
+  drawDoor(ux+6, uppY+6, (boxW-18)/2, uppH-12, state.style, face);
+  drawDoor(ux+12+(boxW-18)/2, uppY+6, (boxW-18)/2, uppH-12, state.style, face);
+
+  // hood
+  const hoodW = (30)*pxPerIn; const hoodX = margin + (36+28)*pxPerIn + gap + (hoodW-gap)/2;
+  const hoodTopY = 88;
+  rect(hoodX, hoodTopY, hoodW, 20, '#e8ecef','#cfd4da',1,2);
+  svg.appendChild(el('polygon',{points:`${hoodX-40},${110} ${hoodX+hoodW+40},110 ${hoodX+hoodW},130 ${hoodX},130`, fill:'#e8ecef', stroke:'#cfd4da'}));
+
+  // right uppers: two boxes
+  ux = margin + (36+28+30)*pxPerIn + gap*3;
+  const boxW2=(rightUppW-gapU)/2;
+  rect(ux, uppY, boxW2, uppH, '#f7f7f7','rgba(0,0,0,.08)',1,3);
+  drawDoor(ux+6, uppY+6, (boxW2-18)/2, uppH-12, state.style, face);
+  drawDoor(ux+12+(boxW2-18)/2, uppY+6, (boxW2-18)/2, uppH-12, state.style, face);
+  ux += boxW2 + gapU;
+  rect(ux, uppY, boxW2, uppH, '#f7f7f7','rgba(0,0,0,.08)',1,3);
+  drawDoor(ux+6, uppY+6, (boxW2-18)/2, uppH-12, state.style, face);
+  drawDoor(ux+12+(boxW2-18)/2, uppY+6, (boxW2-18)/2, uppH-12, state.style, face);
 }
 
-/* ====== Export, Summary, Submit ====== */
+/* ========= BUILD UI ========= */
+function buildColourSwatches(containerId, list, key){
+  const wrap=document.getElementById(containerId); wrap.innerHTML='';
+  list.forEach((c,i)=>{
+    const b=document.createElement('button'); b.className='swatch'; b.title=c.name; b.style.background=c.code;
+    if(i===0 && key==='cab') b.classList.add('is-active');
+    if(i===0 && key==='wall') b.classList.add('is-active');
+    b.onclick=()=>{ state[key]=c.code; [...wrap.children].forEach(x=>x.classList.remove('is-active')); b.classList.add('is-active'); drawRun(); };
+    wrap.appendChild(b);
+  });
+}
+function buildTiles(containerId, options, key){
+  const wrap=document.getElementById(containerId); wrap.innerHTML='';
+  options.forEach((o,i)=>{
+    const b=document.createElement('button'); b.className='tile'; b.title=o.label; b.style.background=o.preview;
+    if(i===0) b.classList.add('is-active');
+    b.onclick=()=>{ state[key]=o.value; [...wrap.children].forEach(x=>x.classList.remove('is-active')); b.classList.add('is-active'); drawRun(); };
+    wrap.appendChild(b);
+  });
+}
+
+/* Options (mapped to our patterns) */
+const SPLASH_OPTS=[
+  {label:'White Subway', value:'white_subway', preview:'linear-gradient(0deg,#f6f7fb 48%,#d8dadf 49%,#d8dadf 51%,#f6f7fb 52%)'},
+  {label:'Basalt Subway', value:'basalt', preview:'linear-gradient(0deg,#2d3136 48%,#a4a7ad 49%,#a4a7ad 51%,#2d3136 52%)'},
+  {label:'Marble Tile', value:'marble', preview:'linear-gradient(0deg,#eef0f2 48%,#d6d6d6 49%,#d6d6d6 51%,#eef0f2 52%)'}
+];
+const TOP_OPTS=[
+  {label:'Calacatta Nuvo', value:'calacatta', preview:'linear-gradient(90deg,#f4f2ed,#efece6)'},
+  {label:'Frosty Carrina', value:'frosty', preview:'linear-gradient(90deg,#f7f5ef,#f0ede6)'},
+  {label:'Jet Black', value:'jet', preview:'linear-gradient(90deg,#1b1d20,#15171a)'},
+  {label:'Raven', value:'raven', preview:'linear-gradient(90deg,#3a3f45,#30353a)'},
+  {label:'Atlantic Salt', value:'atlantic', preview:'repeating-radial-gradient(#bfbab0,#ece9e4 8px)'}
+];
+const FLOOR_OPTS=[
+  {label:'Light Oak', value:'oak_light', preview:'repeating-linear-gradient(90deg,#d9c1a0 0 25px,#cda982 25px 26px)'},
+  {label:'Dark Oak', value:'oak_dark', preview:'repeating-linear-gradient(90deg,#6f4a38 0 25px,#5a3e31 25px 26px)'},
+  {label:'Charcoal Tile', value:'charcoal_tile', preview:'repeating-linear-gradient(0deg,#2e3236 0 16px,#51565c 16px 17px)'},
+  {label:'White Tile', value:'white_tile', preview:'repeating-linear-gradient(0deg,#f6f7fb 0 16px,#d8dadf 16px 17px)'}
+];
+
+/* Door style toggle */
+document.getElementById('optShaker').onclick = (e)=>{ state.style='shaker'; e.currentTarget.classList.add('active'); document.getElementById('optSlab').classList.remove('active'); drawRun(); };
+document.getElementById('optSlab').onclick   = (e)=>{ state.style='slab';   e.currentTarget.classList.add('active'); document.getElementById('optShaker').classList.remove('active'); drawRun(); };
+
+/* Build controls */
+buildColourSwatches('cabSwatches', CABINET_COLOURS, 'cab');
+buildColourSwatches('wallSwatches', WALL_COLOURS, 'wall');
+buildTiles('splashTiles', SPLASH_OPTS, 'splash');
+buildTiles('topTiles', TOP_OPTS, 'top');
+buildTiles('floorTiles', FLOOR_OPTS, 'floor');
+
+/* Contact fields */
+['cName','cEmail','cNotes'].forEach(id=>{ const el=document.getElementById(id); el.addEventListener('input',()=>{ state[id]=el.value; }); });
+
+/* ========= EXPORT / EMAIL ========= */
 function selectionSummary(){
-  const mods = state.baseModules.map(m=>`${m.type}:${m.width}"`).join(', ');
+  const name = (state.cName||'').trim(); const email=(state.cEmail||'').trim();
   return [
-    `Mode: ${state.mode==='door'?'Single Door':'Cabinet Run'}`,
-    `Door Style: ${state.style}`,
-    `Cabinet Finish: ${state.finishType==='paint' ? state.paint : state.wood}`,
-    `Wall Paint: ${state.wall}`,
-    `Flooring: ${state.floor}`,
-    ...(state.mode==='run' ? [
-      `Run: ${state.runLength}"`,
-      `Base modules: ${mods}`,
-      `Countertop: ${state.showCounter? 'Yes':'No'}`,
-      `Toe-kick: ${state.showToe? 'Yes':'No'}`,
-      `Uppers: ${state.showUppers? `${state.upperStyle}, ${state.upperCount} boxes @ ${state.upperHeight}"` : 'No'}`
-    ] : [])
+    `Door style: ${state.style}`,
+    `Cabinet: ${state.cab}`,
+    `Wall: ${state.wall}`,
+    `Backsplash: ${state.splash}`,
+    `Countertop: ${state.top}`,
+    `Floor: ${state.floor}`,
+    '',
+    `Name: ${name}`,
+    `Email: ${email}`,
+    '',
+    `Notes: ${(state.cNotes||'(none)').trim()}`
   ].join('\n');
 }
-
-function serializeSVGToPNG(callback){
-  const data = new XMLSerializer().serializeToString(scene);
+function serializeSVGToPNG(done){
+  const data = new XMLSerializer().serializeToString(svg);
   const blob = new Blob([data], {type:'image/svg+xml;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const img = new Image();
-  img.onload=()=>{
+  img.onload = ()=>{
     const canvas=document.createElement('canvas');
-    canvas.width = scene.viewBox.baseVal.width || scene.width.baseVal.value;
-    canvas.height= scene.viewBox.baseVal.height || scene.height.baseVal.value;
+    canvas.width = svg.viewBox.baseVal.width || svg.width.baseVal.value;
+    canvas.height= svg.viewBox.baseVal.height || svg.height.baseVal.value;
     const ctx=canvas.getContext('2d'); ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.drawImage(img,0,0);
     const png = canvas.toDataURL('image/png');
     URL.revokeObjectURL(url);
-    callback(png);
+    done(png);
   };
-  img.src=url;
+  img.src = url;
 }
+function downloadPNG(pngDataURL, filename='relief-palette.png'){ const a=document.createElement('a'); a.download=filename; a.href=pngDataURL; a.click(); }
 
-function downloadPNG(pngDataURL, filename='relief-selection.png'){
-  const a=document.createElement('a'); a.download=filename; a.href=pngDataURL; a.click();
-}
-
-/* Buttons */
-document.getElementById('downloadBtn').addEventListener('click', ()=>{
-  serializeSVGToPNG((png)=>downloadPNG(png));
-});
-document.getElementById('copyBtn').addEventListener('click', ()=>{
-  const txt = selectionSummary();
-  navigator.clipboard.writeText(txt).then(()=>alert('Selection copied. Paste this into your inquiry form.'));
-});
-
+document.getElementById('downloadBtn').addEventListener('click', ()=>{ serializeSVGToPNG(png=>downloadPNG(png)); });
+document.getElementById('copyBtn').addEventListener('click', ()=>{ navigator.clipboard.writeText(selectionSummary()).then(()=>alert('Selection copied.')); });
 document.getElementById('submitBtn').addEventListener('click', ()=>{
-  // basic validation
-  const email = (state.cEmail||'').trim();
-  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-    alert('Enter a valid email so we can reach you.'); return;
-  }
-  if(!(state.cName||'').trim()){ alert('Please add your name.'); return; }
-
+  const email=(state.cEmail||'').trim(); const name=(state.cName||'').trim();
+  if(!name){ alert('Add your name.'); return; }
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ alert('Enter a valid email.'); return; }
   serializeSVGToPNG((png)=>{
-    // 1) Download the PNG to user device
     downloadPNG(png);
-
-    // 2) Open mailto with prefilled body (they attach the downloaded image)
     const to='info@reliefcontracting.ca';
-    const subject=encodeURIComponent('Kitchen Selection — Colour/Finish Preview');
-    const bodyLines = [
-      `Name: ${state.cName||''}`,
-      `Email: ${state.cEmail||''}`,
-      `Phone: ${state.cPhone||''}`,
-      `Address: ${state.cAddress||''}`,
-      '',
-      'Project Notes:',
-      (state.cNotes||'(none)'),
-      '',
-      'Selection Summary:',
-      selectionSummary(),
-      '',
-      'Attachment:',
-      'Please attach the downloaded image (relief-selection.png).'
-    ];
-    const body=encodeURIComponent(bodyLines.join('\n'));
-    window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+    const subject=encodeURIComponent('Kitchen Palette Selection');
+    const body=encodeURIComponent(selectionSummary() + '\n\nAttachment: please attach the downloaded PNG (relief-palette.png).');
+    window.location.href=`mailto:${to}?subject=${subject}&body=${body}`;
   });
 });
 
-/* ====== Initial build & render ====== */
-function render(){ clearSVG(scene); drawScene(); }
-makeSwatches();
-buildBaseModuleRows();
-paintWrap.style.display = state.finishType==='paint' ? 'flex':'none';
-woodWrap.style.display  = state.finishType==='wood' ? 'flex':'none';
-render();
-
-}); // DOMContentLoaded
+/* ========= FIRST RENDER ========= */
+drawRun();
 </script>
 </body>
 </html>
