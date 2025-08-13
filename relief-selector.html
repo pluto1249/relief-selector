@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Relief Contracting — Colour & Finish Selector</title>
+<style>
+  :root{
+    --brand:#042039; --gold:#a48d32; --ink:#111; --muted:#6b7280; --panel:#f7f9fc; --line:#e5e7eb;
+  }
+  html,body{margin:0;background:#fff;color:var(--ink);font:14px/1.4 system-ui,Segoe UI,Roboto,Arial,sans-serif}
+  .wrap{max-width:1150px;margin:28px auto;padding:0 16px}
+  h1{font-size:20px;margin:0 0 10px;color:var(--brand)}
+  .grid{display:grid;grid-template-columns:360px 1fr;gap:16px}
+  @media (max-width:980px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:6px 0}
+  label{font-weight:600;color:#283142}
+  select,input[type="number"],input[type="text"],input[type="email"],textarea{
+    border:1px solid #cfd4dc;border-radius:8px;padding:8px 10px;min-width:120px
+  }
+  textarea{width:100%;min-height:70px}
+  .section{margin-top:6px}
+  .section>div:first-child{font-weight:800;color:#0f172a;margin-bottom:6px}
+  .swatches{display:flex;gap:8px;flex-wrap:wrap}
+  .swatch{width:28px;height:28px;border-radius:6px;border:1px solid #c7c9cf;cursor:pointer}
+  .swatch.is-active{outline:2px solid var(--gold);outline-offset:2px}
+  .tools{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{background:var(--brand);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
+  .btn.secondary{background:#eef2ff;color:#1f2937}
+  .small{font-size:12px;color:var(--muted)}
+  .stage{background:#fff;border:1px solid var(--line);border-radius:12px;min-height:520px;display:flex;align-items:center;justify-content:center}
+  .mode-tabs{display:flex;gap:6px}
+  .tab{border:1px solid #cbd5e1;border-radius:999px;padding:8px 12px;cursor:pointer}
+  .tab.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .mod-table{display:grid;grid-template-columns:1fr 90px;gap:8px}
+  .notice{background:#fff8e6;border:1px solid #f0d48a;padding:8px;border-radius:8px;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Relief Contracting — Colour &amp; Finish Selector (Client Preview)</h1>
+
+  <div class="grid">
+    <!-- LEFT: Controls + Lead form -->
+    <div class="card">
+      <div class="section">
+        <div>Mode</div>
+        <div class="mode-tabs" id="modeTabs">
+          <div class="tab active" data-mode="door">Single Door</div>
+          <div class="tab" data-mode="run">Cabinet Run</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div>Door Style (2 types)</div>
+        <select id="style">
+          <option value="slab">Slab</option>
+          <option value="shaker" selected>Shaker</option>
+        </select>
+      </div>
+
+      <div class="section">
+        <div>Cabinet Finish</div>
+        <select id="finishType">
+          <option value="paint" selected>Paint</option>
+          <option value="wood">Wood</option>
+        </select>
+        <div class="row">
+          <div class="swatches" id="paintSwatches" aria-label="Paint Colours"></div>
+          <div class="swatches" id="woodSwatches" aria-label="Wood Species" style="display:none"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div>Walls (Paint)</div>
+        <div class="swatches" id="wallSwatches" aria-label="Wall Paint Colours"></div>
+      </div>
+
+      <div class="section">
+        <div>Flooring</div>
+        <div class="swatches" id="floorSwatches" aria-label="Flooring Options"></div>
+        <div class="small">Swatches are illustrative; we’ll match final selections to real samples.</div>
+      </div>
+
+      <div id="runBlock" class="section" style="display:none">
+        <div>Cabinet Run</div>
+        <div class="row">
+          <label for="runLength">Total run (inches)</label>
+          <input id="runLength" type="number" value="108" min="60" max="240" step="6">
+          <label><input type="checkbox" id="showCounter" checked> Countertop</label>
+          <label><input type="checkbox" id="showToe" checked> Toe-kick</label>
+          <label><input type="checkbox" id="showUppers" checked> Uppers</label>
+        </div>
+
+        <div class="row">
+          <label for="upperHeight">Upper height</label>
+          <select id="upperHeight">
+            <option value="30" selected>30"</option>
+            <option value="36">36"</option>
+            <option value="42">42"</option>
+          </select>
+
+          <label for="upperCount"># of boxes</label>
+          <select id="upperCount">
+            <option>2</option><option selected>3</option><option>4</option>
+          </select>
+
+          <label for="upperStyle">Upper option (2)</label>
+          <select id="upperStyle">
+            <option value="doors" selected>Doors</option>
+            <option value="shelves">Open Shelves</option>
+          </select>
+        </div>
+
+        <div class="section">
+          <div>Base modules (3 options only)</div>
+          <div id="baseMods" class="mod-table"></div>
+          <div class="small">Tip: widths should roughly add up to the total run; small gaps auto-fill as spacers.</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div>Send Your Selection</div>
+        <div class="notice">On Submit: your preview image is saved to your device, and your email app opens addressed to <b>info@reliefcontracting.ca</b>. Attach the downloaded image before sending.</div>
+        <div class="row">
+          <input id="cName" type="text" placeholder="Full name" style="flex:1">
+          <input id="cEmail" type="email" placeholder="Email" style="flex:1">
+        </div>
+        <div class="row">
+          <input id="cPhone" type="text" placeholder="Phone" style="flex:1">
+          <input id="cAddress" type="text" placeholder="Project address" style="flex:1">
+        </div>
+        <textarea id="cNotes" placeholder="Anything we should know? e.g., timeline, appliances, must-haves."></textarea>
+        <div class="tools">
+          <button class="btn" id="submitBtn">Submit (Email Us)</button>
+          <button class="btn secondary" id="downloadBtn">Download PNG</button>
+          <button class="btn secondary" id="copyBtn">Copy Summary</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Stage -->
+    <div class="stage">
+      <svg id="scene" width="900" height="520" viewBox="0 0 900 520" role="img" aria-label="Preview"></svg>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+/* ====== Config ====== */
+const PAINTS = [
+  {name:'RC Blue', code:'#042039'},
+  {name:'Warm White', code:'#f5f5f2'},
+  {name:'Cloud Grey', code:'#cfd5db'},
+  {name:'Graphite', code:'#2b2f38'},
+  {name:'Deep Green', code:'#1f3b34'},
+  {name:'Classic Black', code:'#111111'}
+];
+const WOODS = [
+  {name:'Maple', id:'maple'},
+  {name:'White Oak', id:'whiteoak'},
+  {name:'Walnut', id:'walnut'}
+];
+const WALLS = [
+  {name:'White', code:'#f6f7fb'},
+  {name:'Soft Greige', code:'#efefe9'},
+  {name:'Pale Grey', code:'#e8edf2'},
+  {name:'Warm Taupe', code:'#e9e0d8'}
+];
+const FLOORS = [
+  {name:'Light Oak', id:'floor_oak_light'},
+  {name:'Mid Oak', id:'floor_oak_mid'},
+  {name:'Walnut', id:'floor_walnut'},
+  {name:'Concrete', id:'floor_concrete'},
+  {name:'Warm Tile', id:'floor_tile_warm'}
+];
+// 3 lower module types only
+const MODULE_TYPES = [
+  {id:'door', label:'Door (shelves)'},
+  {id:'drawer3', label:'3-Drawer Base'},
+  {id:'sink', label:'Sink Base'}
+];
+
+/* ====== State ====== */
+const state = {
+  mode:'door',
+  style:'shaker', // slab | shaker
+  finishType:'paint', // paint | wood
+  paint:'#042039',
+  wood:'maple',
+  wall:'#f6f7fb',
+  floor:'floor_oak_light',
+
+  // run
+  runLength:108,
+  showCounter:true,
+  showToe:true,
+  showUppers:true,
+  upperHeight:30,
+  upperCount:3,
+  upperStyle:'doors', // doors | shelves
+  baseModules:[
+    {type:'sink', width:36},
+    {type:'door', width:24},
+    {type:'drawer3', width:24}
+  ],
+
+  // client
+  cName:'', cEmail:'', cPhone:'', cAddress:'', cNotes:''
+};
+
+/* ====== DOM ====== */
+const scene = document.getElementById('scene');
+const styleSel = document.getElementById('style');
+const finishSel = document.getElementById('finishType');
+const paintWrap = document.getElementById('paintSwatches');
+const woodWrap  = document.getElementById('woodSwatches');
+const wallWrap  = document.getElementById('wallSwatches');
+const floorWrap = document.getElementById('floorSwatches');
+const runBlock  = document.getElementById('runBlock');
+
+/* ====== Helpers ====== */
+function clearSVG(svg){ while(svg.firstChild) svg.removeChild(svg.firstChild); }
+function ensureDefs(svg){
+  let d=svg.querySelector('defs'); if(!d){ d=document.createElementNS('http://www.w3.org/2000/svg','defs'); svg.appendChild(d); }
+  return d;
+}
+function rect(svg,x,y,w,h,fill,stroke='none',sw=1,rx=0,ry=0){
+  const r=document.createElementNS('http://www.w3.org/2000/svg','rect');
+  r.setAttribute('x',x); r.setAttribute('y',y); r.setAttribute('width',w); r.setAttribute('height',h);
+  r.setAttribute('fill',fill); r.setAttribute('stroke',stroke); r.setAttribute('stroke-width',sw);
+  if(rx) r.setAttribute('rx',rx); if(ry) r.setAttribute('ry',ry); svg.appendChild(r); return r;
+}
+function line(svg,x1,y1,x2,y2,stroke='#000',sw=1,op=1){
+  const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+  l.setAttribute('x1',x1); l.setAttribute('y1',y1); l.setAttribute('x2',x2); l.setAttribute('y2',y2);
+  l.setAttribute('stroke',stroke); l.setAttribute('stroke-width',sw); l.setAttribute('opacity',op);
+  svg.appendChild(l); return l;
+}
+function shade(hex,percent){
+  const f=parseInt(hex.slice(1),16),t=percent<0?0:255,p=Math.abs(percent)/100,
+        R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
+  const to=v=>Math.round((t - v)*p)+v;
+  return `#${(1<<24 | to(R)<<16 | to(G)<<8 | to(B)).toString(16).slice(1)}`;
+}
+function woodPattern(id, svg){
+  const defs=ensureDefs(svg);
+  if(defs.querySelector(`#${id}`)) return;
+  const pattern = document.createElementNS('http://www.w3.org/2000/svg','pattern');
+  pattern.setAttribute('id', id);
+  pattern.setAttribute('patternUnits','userSpaceOnUse');
+  pattern.setAttribute('width','14'); pattern.setAttribute('height','14');
+  const base = document.createElementNS('http://www.w3.org/2000/svg','rect');
+  const grain = document.createElementNS('http://www.w3.org/2000/svg','path');
+  if(id==='maple'){ base.setAttribute('fill','#e9dcc9'); grain.setAttribute('stroke','#d5c4a7'); }
+  else if(id==='whiteoak'){ base.setAttribute('fill','#e6d9bd'); grain.setAttribute('stroke','#cdbb93'); }
+  else { base.setAttribute('fill','#6e4b3a'); grain.setAttribute('stroke','#5a3e31'); }
+  grain.setAttribute('d','M0 7 H14'); grain.setAttribute('stroke-width','0.7'); grain.setAttribute('opacity','0.6');
+  pattern.appendChild(base); pattern.appendChild(grain); defs.appendChild(pattern);
+}
+function makeGlass(defs){
+  if(defs.querySelector('#glass')) return;
+  const lg=document.createElementNS('http://www.w3.org/2000/svg','linearGradient');
+  lg.setAttribute('id','glass'); lg.setAttribute('x1','0'); lg.setAttribute('x2','0'); lg.setAttribute('y1','0'); lg.setAttribute('y2','1');
+  const s1=document.createElementNS(lg.namespaceURI,'stop'); s1.setAttribute('offset','0%'); s1.setAttribute('stop-color','#f0f6ff'); s1.setAttribute('stop-opacity','0.9');
+  const s2=document.createElementNS(lg.namespaceURI,'stop'); s2.setAttribute('offset','100%'); s2.setAttribute('stop-color','#dbe7f6'); s2.setAttribute('stop-opacity','0.6');
+  lg.appendChild(s1); lg.appendChild(s2); defs.appendChild(lg);
+}
+
+/* Swatch builders */
+function setActive(container, el){ [...container.children].forEach(c=>c.classList.remove('is-active')); el.classList.add('is-active'); }
+function makeSwatches(){
+  // paint
+  paintWrap.innerHTML='';
+  PAINTS.forEach((p,i)=>{
+    const b=document.createElement('button');
+    b.className='swatch'; b.title=p.name; b.style.background=p.code;
+    if(i===0) b.classList.add('is-active');
+    b.onclick=()=>{ state.paint=p.code; setActive(paintWrap,b); render(); };
+    paintWrap.appendChild(b);
+  });
+  // wood
+  woodWrap.innerHTML='';
+  WOODS.forEach((w,i)=>{
+    const b=document.createElement('button');
+    b.className='swatch'; b.title=w.name; b.style.background='#ddd';
+    b.dataset.wood=w.id; if(i===0) b.classList.add('is-active');
+    b.onclick=()=>{ state.wood=w.id; setActive(woodWrap,b); render(); };
+    woodWrap.appendChild(b);
+  });
+  // walls
+  wallWrap.innerHTML='';
+  WALLS.forEach((w,i)=>{
+    const b=document.createElement('button');
+    b.className='swatch'; b.title=w.name; b.style.background=w.code;
+    if(i===0) b.classList.add('is-active');
+    b.onclick=()=>{ state.wall=w.code; setActive(wallWrap,b); render(); };
+    wallWrap.appendChild(b);
+  });
+  // floors (CSS-only previews)
+  const floorPreview = {
+    'floor_oak_light':'linear-gradient(45deg,#e8dcc4 25%,#d8c6a9 25%,#d8c6a9 50%,#e8dcc4 50%,#e8dcc4 75%,#d8c6a9 75%)',
+    'floor_oak_mid':'linear-gradient(45deg,#d0b48f 25%,#c2a27b 25%,#c2a27b 50%,#d0b48f 50%,#d0b48f 75%,#c2a27b 75%)',
+    'floor_walnut':'linear-gradient(45deg,#6b4a39 25%,#5a3e31 25%,#5a3e31 50%,#6b4a39 50%,#6b4a39 75%,#5a3e31 75%)',
+    'floor_concrete':'repeating-linear-gradient(45deg,#c7cbd0 0 6px,#b7bcc3 6px 12px)',
+    'floor_tile_warm':'repeating-linear-gradient(0deg,#d8c7b4 0 14px,#cbb7a0 14px 28px)'
+  };
+  floorWrap.innerHTML='';
+  FLOORS.forEach((f,i)=>{
+    const b=document.createElement('button');
+    b.className='swatch'; b.title=f.name; b.style.background=floorPreview[f.id];
+    if(i===0) b.classList.add('is-active');
+    b.onclick=()=>{ state.floor=f.id; setActive(floorWrap,b); render(); };
+    floorWrap.appendChild(b);
+  });
+}
+
+/* UI wiring */
+document.getElementById('modeTabs').addEventListener('click', (e)=>{
+  const t=e.target.closest('.tab'); if(!t) return;
+  [...e.currentTarget.children].forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  state.mode=t.dataset.mode;
+  runBlock.style.display = state.mode==='run' ? 'block' : 'none';
+  render();
+});
+styleSel.addEventListener('change', ()=>{ state.style=styleSel.value; render(); });
+finishSel.addEventListener('change', ()=>{
+  state.finishType=finishSel.value;
+  paintWrap.style.display = state.finishType==='paint' ? 'flex':'none';
+  woodWrap.style.display  = state.finishType==='wood' ? 'flex':'none';
+  render();
+});
+
+/* Run inputs */
+document.getElementById('runLength').addEventListener('input', e=>{ state.runLength=+e.target.value||108; render(); });
+['showCounter','showToe','showUppers'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', e=>{ state[id]=e.target.checked; render(); });
+});
+document.getElementById('upperHeight').addEventListener('change', e=>{ state.upperHeight=+e.target.value; render(); });
+document.getElementById('upperCount').addEventListener('change', e=>{ state.upperCount=+e.target.value; render(); });
+document.getElementById('upperStyle').addEventListener('change', e=>{ state.upperStyle=e.target.value; render(); });
+
+/* Client fields */
+['cName','cEmail','cPhone','cAddress','cNotes'].forEach(id=>{
+  const el=document.getElementById(id); el.addEventListener('input', ()=>{ state[id]=el.value; });
+});
+
+/* Base module rows (exactly 3) */
+const baseModsEl = document.getElementById('baseMods');
+function buildBaseModuleRows(){
+  baseModsEl.innerHTML='';
+  state.baseModules = state.baseModules.slice(0,3);
+  while(state.baseModules.length<3) state.baseModules.push({type:'door', width:24});
+  state.baseModules.forEach((m)=>{
+    const typeSel=document.createElement('select');
+    MODULE_TYPES.forEach(mt=>{
+      const opt=document.createElement('option'); opt.value=mt.id; opt.textContent=mt.label;
+      if(mt.id===m.type) opt.selected=true; typeSel.appendChild(opt);
+    });
+    typeSel.addEventListener('change', e=>{ m.type=e.target.value; render(); });
+
+    const wSel=document.createElement('select');
+    [18,21,24,27,30,33,36].forEach(w=>{
+      const opt=document.createElement('option'); opt.value=w; opt.textContent=w+'"';
+      if(w===m.width) opt.selected=true; wSel.appendChild(opt);
+    });
+    wSel.addEventListener('change', e=>{ m.width=+e.target.value; render(); });
+
+    baseModsEl.appendChild(typeSel);
+    baseModsEl.appendChild(wSel);
+  });
+}
+
+/* ====== Drawing ====== */
+function drawDoor(svg, x,y,w,h, style, fillPaint, fillWoodId){
+  const NS='http://www.w3.org/2000/svg';
+  const g=document.createElementNS(NS,'g'); svg.appendChild(g);
+  const faceFill = fillPaint ? fillPaint : `url(#${fillWoodId})`;
+  rect(svg,x,y,w,h, faceFill,'rgba(0,0,0,.18)',1.1,4,4);
+  if(style==='shaker'){
+    const rail=18;
+    const inner=document.createElementNS(NS,'rect');
+    inner.setAttribute('x', x+rail); inner.setAttribute('y', y+rail);
+    inner.setAttribute('width', w-rail*2); inner.setAttribute('height', h-rail*2);
+    inner.setAttribute('rx','2'); inner.setAttribute('ry','2');
+    inner.setAttribute('fill', fillPaint ? shade(fillPaint,-6) : 'rgba(0,0,0,.04)');
+    inner.setAttribute('stroke','rgba(0,0,0,.15)'); svg.appendChild(inner);
+  }
+  const handle=document.createElementNS(NS,'rect');
+  handle.setAttribute('x', x+w-10); handle.setAttribute('y', y+h/2-22);
+  handle.setAttribute('width','3'); handle.setAttribute('height','44'); handle.setAttribute('rx','1.5');
+  handle.setAttribute('fill','#b4b7bd'); svg.appendChild(handle);
+}
+function drawShelfBox(svg, x,y,w,h){
+  rect(svg, x, y, w, h, '#f7f7f7', 'rgba(0,0,0,.08)', 1);
+  rect(svg, x+8, y+h/2-2, w-16, 4, '#d0d4db');
+}
+
+function drawScene(){
+  const W=900, H=520, margin=28;
+  const wallH = H*0.56;
+  const defs=ensureDefs(scene); makeGlass(defs);
+  woodPattern('maple', scene); woodPattern('whiteoak', scene); woodPattern('walnut', scene);
+
+  // BACKGROUND: wall + floor
+  rect(scene,0,0,W,wallH, state.wall); // wall paint
+  // floor styles via patterns
+  const fpId = `pat_${state.floor}`;
+  if(!defs.querySelector(`#${fpId}`)){
+    const pat=document.createElementNS('http://www.w3.org/2000/svg','pattern');
+    pat.setAttribute('id',fpId); pat.setAttribute('patternUnits','userSpaceOnUse');
+    pat.setAttribute('width','28'); pat.setAttribute('height','28');
+    const base=document.createElementNS(pat.namespaceURI,'rect'); base.setAttribute('x','0'); base.setAttribute('y','0'); base.setAttribute('width','28'); base.setAttribute('height','28');
+    const grain=document.createElementNS(pat.namespaceURI,'path'); grain.setAttribute('stroke-width','0.7'); grain.setAttribute('opacity','0.6');
+    if(state.floor==='floor_oak_light'){ base.setAttribute('fill','#e7dac3'); grain.setAttribute('stroke','#d2c2a6'); }
+    else if(state.floor==='floor_oak_mid'){ base.setAttribute('fill','#cfb28d'); grain.setAttribute('stroke','#bb9b73'); }
+    else if(state.floor==='floor_walnut'){ base.setAttribute('fill','#6b4a39'); grain.setAttribute('stroke','#5a3e31'); }
+    else if(state.floor==='floor_concrete'){ base.setAttribute('fill','#c1c6cc'); grain.setAttribute('stroke','#a8aeb6'); }
+    else { base.setAttribute('fill','#d8c7b4'); grain.setAttribute('stroke','#c3ac95'); }
+    grain.setAttribute('d','M0 14 H28');
+    pat.appendChild(base); pat.appendChild(grain); defs.appendChild(pat);
+  }
+  rect(scene,0,wallH,W,H-wallH, `url(#${fpId})`);
+
+  if(state.mode==='door'){
+    const w=280,h=420;
+    const fillPaint = state.finishType==='paint' ? state.paint : null;
+    const fillWood  = state.finishType==='wood'  ? state.wood  : null;
+    drawDoor(scene, (W-w)/2, (H-h)/2, w, h, state.style, fillPaint, fillWood);
+    return;
+  }
+
+  // RUN
+  const avail = W - margin*2;
+  const totalInches = Math.max(48, state.runLength);
+  const pxPerIn = avail / totalInches;
+  const baseTopY = wallH - 8;
+  const cabinetH = 230;
+  const toeH = 26;
+
+  // BASES (3 boxes)
+  let x = margin;
+  state.baseModules.forEach((m)=>{
+    const wIn = m.width;
+    const wPx = wIn * pxPerIn;
+    const cabY = baseTopY - (state.showCounter? 12:0) - cabinetH;
+
+    // Box
+    rect(scene, x, cabY, wPx, cabinetH, '#f7f7f7', 'rgba(0,0,0,.08)', 1);
+
+    const fillPaint = state.finishType==='paint' ? state.paint : null;
+    const fillWood  = state.finishType==='wood'  ? state.wood  : null;
+
+    if(m.type==='drawer3'){
+      const drawerH = (cabinetH - 24) / 3;
+      for(let i=0;i<3;i++){
+        const y = cabY + 8 + i*(drawerH+4);
+        rect(scene, x+6, y, wPx-12, drawerH, fillPaint?fillPaint:`url(#${fillWood})`, 'rgba(0,0,0,.18)', 1, 3, 3);
+        rect(scene, x+wPx/2-14, y+drawerH/2-2, 28,4, '#b4b7bd');
+      }
+    } else if(m.type==='sink'){
+      const falseH=32;
+      rect(scene, x+6, cabY+6, wPx-12, falseH, fillPaint?fillPaint:`url(#${fillWood})`, 'rgba(0,0,0,.18)', 1,3,3);
+      rect(scene, x+wPx/2-14, cabY+6+falseH/2-2, 28,4, '#b4b7bd');
+      const doorW=(wPx-18)/2;
+      drawDoor(scene, x+6, cabY+10+falseH, doorW, cabinetH-falseH-16, state.style, fillPaint, fillWood);
+      drawDoor(scene, x+12+doorW, cabY+10+falseH, doorW, cabinetH-falseH-16, state.style, fillPaint, fillWood);
+    } else {
+      if(wIn>=24){
+        const dW=(wPx-18)/2;
+        drawDoor(scene, x+6, cabY+6, dW, cabinetH-12, state.style, fillPaint, fillWood);
+        drawDoor(scene, x+12+dW, cabY+6, dW, cabinetH-12, state.style, fillPaint, fillWood);
+      } else {
+        drawDoor(scene, x+6, cabY+6, wPx-12, cabinetH-12, state.style, fillPaint, fillWood);
+      }
+    }
+
+    if(state.showToe){
+      rect(scene, x, cabY+cabinetH-6, wPx, toeH, '#c9ccd1');
+      line(scene, x, cabY+cabinetH-6, x+wPx, cabY+cabinetH-6, '#a9adb5',1,0.7);
+    }
+
+    x += wPx + 6;
+  });
+
+  // Countertop
+  if(state.showCounter){
+    rect(scene, margin-6, baseTopY-12, avail+12, 12, '#b7b9c0', 'rgba(0,0,0,.2)',1,4,4);
+  }
+
+  // UPPERS
+  if(state.showUppers){
+    const uCount = state.upperCount;
+    const uHIn = state.upperHeight;
+    const uppersY = baseTopY - (state.showCounter? 12:0) - 20 - (uHIn*3);
+    const uppersH = uHIn*3;
+    const gap = 6;
+    const boxW = (avail - gap*(uCount-1)) / uCount;
+    for(let i=0;i<uCount;i++){
+      const ux = margin + i*(boxW+gap);
+      if(state.upperStyle==='shelves'){
+        drawShelfBox(scene, ux, uppersY, boxW, uppersH);
+      } else {
+        rect(scene, ux, uppersY, boxW, uppersH, '#f7f7f7', 'rgba(0,0,0,.08)', 1);
+        const fillPaint = state.finishType==='paint' ? state.paint : null;
+        const fillWood  = state.finishType==='wood'  ? state.wood  : null;
+        const dW = (boxW-18)/2;
+        drawDoor(scene, ux+6, uppersY+6, dW, uppersH-12, state.style, fillPaint, fillWood);
+        drawDoor(scene, ux+12+dW, uppersY+6, dW, uppersH-12, state.style, fillPaint, fillWood);
+      }
+    }
+  }
+}
+
+/* ====== Export, Summary, Submit ====== */
+function selectionSummary(){
+  const mods = state.baseModules.map(m=>`${m.type}:${m.width}"`).join(', ');
+  return [
+    `Mode: ${state.mode==='door'?'Single Door':'Cabinet Run'}`,
+    `Door Style: ${state.style}`,
+    `Cabinet Finish: ${state.finishType==='paint' ? state.paint : state.wood}`,
+    `Wall Paint: ${state.wall}`,
+    `Flooring: ${state.floor}`,
+    ...(state.mode==='run' ? [
+      `Run: ${state.runLength}"`,
+      `Base modules: ${mods}`,
+      `Countertop: ${state.showCounter? 'Yes':'No'}`,
+      `Toe-kick: ${state.showToe? 'Yes':'No'}`,
+      `Uppers: ${state.showUppers? `${state.upperStyle}, ${state.upperCount} boxes @ ${state.upperHeight}"` : 'No'}`
+    ] : [])
+  ].join('\n');
+}
+
+function serializeSVGToPNG(callback){
+  const data = new XMLSerializer().serializeToString(scene);
+  const blob = new Blob([data], {type:'image/svg+xml;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const img = new Image();
+  img.onload=()=>{
+    const canvas=document.createElement('canvas');
+    canvas.width = scene.viewBox.baseVal.width || scene.width.baseVal.value;
+    canvas.height= scene.viewBox.baseVal.height || scene.height.baseVal.value;
+    const ctx=canvas.getContext('2d'); ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(img,0,0);
+    const png = canvas.toDataURL('image/png');
+    URL.revokeObjectURL(url);
+    callback(png);
+  };
+  img.src=url;
+}
+
+function downloadPNG(pngDataURL, filename='relief-selection.png'){
+  const a=document.createElement('a'); a.download=filename; a.href=pngDataURL; a.click();
+}
+
+/* Buttons */
+document.getElementById('downloadBtn').addEventListener('click', ()=>{
+  serializeSVGToPNG((png)=>downloadPNG(png));
+});
+document.getElementById('copyBtn').addEventListener('click', ()=>{
+  const txt = selectionSummary();
+  navigator.clipboard.writeText(txt).then(()=>alert('Selection copied. Paste this into your inquiry form.'));
+});
+
+document.getElementById('submitBtn').addEventListener('click', ()=>{
+  // basic validation
+  const email = (state.cEmail||'').trim();
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    alert('Enter a valid email so we can reach you.'); return;
+  }
+  if(!(state.cName||'').trim()){ alert('Please add your name.'); return; }
+
+  serializeSVGToPNG((png)=>{
+    // 1) Download the PNG to user device
+    downloadPNG(png);
+
+    // 2) Open mailto with prefilled body (they attach the downloaded image)
+    const to='info@reliefcontracting.ca';
+    const subject=encodeURIComponent('Kitchen Selection — Colour/Finish Preview');
+    const bodyLines = [
+      `Name: ${state.cName||''}`,
+      `Email: ${state.cEmail||''}`,
+      `Phone: ${state.cPhone||''}`,
+      `Address: ${state.cAddress||''}`,
+      '',
+      'Project Notes:',
+      (state.cNotes||'(none)'),
+      '',
+      'Selection Summary:',
+      selectionSummary(),
+      '',
+      'Attachment:',
+      'Please attach the downloaded image (relief-selection.png).'
+    ];
+    const body=encodeURIComponent(bodyLines.join('\n'));
+    window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+  });
+});
+
+/* ====== Initial build & render ====== */
+function render(){ clearSVG(scene); drawScene(); }
+makeSwatches();
+buildBaseModuleRows();
+paintWrap.style.display = state.finishType==='paint' ? 'flex':'none';
+woodWrap.style.display  = state.finishType==='wood' ? 'flex':'none';
+render();
+
+}); // DOMContentLoaded
+</script>
+</body>
+</html>
